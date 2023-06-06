@@ -1,6 +1,8 @@
+import crypto from 'crypto';
 import mongoose from 'mongoose';
+import { roles, permissions} from '../roles_permit.js';
 
-const emailRegex = /^([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\"\(\[\]!#-[^-~ \t]|(\\[\t -~]))+\")@([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\[[\t -Z^-~]*])$/;
+const emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$/;
 const phoneRegex = /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
 
 const UserSchema = new mongoose.Schema({
@@ -37,9 +39,14 @@ const UserSchema = new mongoose.Schema({
   resetPasswordExpire: Date,
   role: {
     type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
+    enum: [roles.user, roles.admin, roles.superAdmin, roles.editor, roles.moderator, roles.author, roles.subscriber],
+    default: roles.user,
   },
+  permissions: {
+    type: String,
+    enum: [...Object.values(roles)],
+    default: roles.user,
+  },  
   connections: {
     type: Array,
     default: [],
@@ -123,6 +130,20 @@ const UserSchema = new mongoose.Schema({
     default: false
   }
 });
+
+// User reset password token
+UserSchema.methods.getResetPasswordToken = function() {
+  // Generate token
+  const resetToken = crypto.randomBytes(20).toString('hex');
+
+  // Hash token and set to resetPasswordToken field
+  this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+  // Set token expire time
+  this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;  // 10 minutes
+
+  return resetToken; 
+}
 
 const User = mongoose.model('User', UserSchema);
 
