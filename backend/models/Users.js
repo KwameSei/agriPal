@@ -129,7 +129,10 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   }
-});
+}, {
+  timestamps: true
+}
+);
 
 // User reset password token
 UserSchema.methods.getResetPasswordToken = function() {
