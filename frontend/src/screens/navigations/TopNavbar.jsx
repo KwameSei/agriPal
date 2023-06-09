@@ -37,7 +37,7 @@ const Navbar = () => {
           <Link to='/' className="link">
             <FontAwesomeIcon icon={faHouse} />
           </Link>
-          <Link className="link">
+            <Link className="link">
           <FontAwesomeIcon icon={faBars} />
           </Link>
           <div className="right-icons">
@@ -45,7 +45,11 @@ const Navbar = () => {
               <FontAwesomeIcon icon={faUnlock} />
             </Link>
             {!currentUser ? (
-              <Link to='/login' className="link" onClick={() => dispatch({type: 'UPDATE_USER', payload:user})}>
+              <Link to='/login'
+                className="link" 
+                // onClick={() => dispatch({type: 'UPDATE_USER', payload:user})}
+                onClick={() => dispatch({ type: 'OPEN_LOGIN' })}
+              >
                 <FontAwesomeIcon icon={faRightToBracket} />
               </Link>
             ) : (

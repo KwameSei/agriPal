@@ -16,7 +16,7 @@ const App = () => {
       <Router>
         <Navbar />
         <Routes>
-          {/* <Route path="/login" element={<Login />} /> */}
+          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/resetpassword/:resetToken" element={<ResetPassword />} />

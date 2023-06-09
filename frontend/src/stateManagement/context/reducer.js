@@ -24,11 +24,21 @@ const reducer = (state, action) => {
     //     isFetching: false,
     //     error: false,
     //   };
-    case "UPDATE_USER":
+    case "UPDATE_USER": // Update the currentUser
       return {
         ...state, // Spread operator
         currentUser: action.payload,  // Update the currentUser
       };
+      case "OPEN_LOGIN":  // Open the login modal
+        return {
+          ...state, // Spread operator
+          openLogin: true,  // Update the currentUser
+        };
+        case "CLOSE_LOGIN": // Close the login modal
+          return {
+            ...state,
+            openLogin: false,
+          }
     default:
       return state;
   } 

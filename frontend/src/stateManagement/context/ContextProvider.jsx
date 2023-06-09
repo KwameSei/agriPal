@@ -3,6 +3,7 @@ import reducer from './reducer';
 
 const initialState = {
   currentUser: null,
+  openLogin: false,
   isFetching: false,
   error: false,
 };
