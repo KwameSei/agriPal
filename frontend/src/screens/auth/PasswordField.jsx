@@ -16,7 +16,6 @@ const Password = ({ passwordRef, id = 'password', label = 'Password' }) => {
   return (
     <div>
       <TextField
-        autoFocus
         margin="dense"
         variant="standard"
         id={id}

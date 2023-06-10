@@ -29,16 +29,31 @@ const reducer = (state, action) => {
         ...state, // Spread operator
         currentUser: action.payload,  // Update the currentUser
       };
-      case "OPEN_LOGIN":  // Open the login modal
-        return {
-          ...state, // Spread operator
-          openLogin: true,  // Update the currentUser
-        };
-        case "CLOSE_LOGIN": // Close the login modal
-          return {
-            ...state,
-            openLogin: false,
-          }
+    case "OPEN_LOGIN":  // Open the login modal
+      return {
+        ...state, // Spread operator
+        openLogin: true,  // Update the currentUser
+      };
+    case "CLOSE_LOGIN": // Close the login modal
+      return {
+        ...state,
+        openLogin: false,
+      };
+    case "START_LOADING":
+      return {
+        ...state,
+        loading: true,
+      };
+    case "STOP_LOADING":
+      return {
+        ...state,
+        loading: false,
+      };
+    case "UPDATE_NOTIFICATIONS": // Update the notifications
+      return {
+        ...state,
+        notify: action.payload,
+      }
     default:
       return state;
   } 

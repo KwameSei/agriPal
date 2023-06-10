@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { useValue } from "../../stateManagement/context/ContextProvider";
 import { DialogContent, DialogContentText, IconButton ,TextField, DialogActions, Button, DialogTitle } from "@mui/material";
 import Password from "./PasswordField";
+import GoogleLogin from "./GoogleLogin";
 import { Close, Send } from "@mui/icons-material";
 
 const Form = () => {
@@ -148,6 +149,9 @@ const Form = () => {
         <Button onClick={() => setIsRegister(!isRegister)} color="primary" variant="text">
           {isRegister ? 'Sign in' : 'Register'}
         </Button>
+      </DialogActions>
+      <DialogActions sx={{ justifyContent: 'center', py: '24'}}>
+        <GoogleLogin />
       </DialogActions>
     </div>
   );

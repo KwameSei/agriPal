@@ -8,7 +8,7 @@ import { faUnlock } from '@fortawesome/free-solid-svg-icons';
 // import { makeStyles } from '@emotion/styled'
 // import { styled } from '@mui/material/styles';
 import { Link, useNavigate } from 'react-router-dom';
-import imgURL from '../../../src/osei.jpg';
+// import imgURL from '../../../src/osei.jpg';
 import './TopNavbar.css'
 import UserIcons from '../users/UserIcons';
 import { useContext } from 'react';
@@ -17,7 +17,7 @@ import currentUser from '../../stateManagement/context/ContextProvider';
 import { useValue } from '../../stateManagement/context/ContextProvider';
 
 // const navigate = useNavigate();
-const user = {name: 'Nat', imgURL: imgURL} 
+// const user = {name: 'Nat', imgURL: imgURL} 
 
 const Navbar = () => {
   const {state: {currentUser}, dispatch} = useValue();

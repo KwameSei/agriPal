@@ -4,6 +4,8 @@ import reducer from './reducer';
 const initialState = {
   currentUser: null,
   openLogin: false,
+  loading: false,
+  notify: { isOpen: false, message: '', type: '', severity: 'info'},
   isFetching: false,
   error: false,
 };

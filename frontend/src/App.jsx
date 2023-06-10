@@ -8,6 +8,8 @@ import Home from './screens/home/home'
 import UsersList from './screens/users/usersList'
 import User from './screens/users/User'
 import Navbar from './screens/navigations/TopNavbar'
+import Notify from './components/Notifications'
+import Loading from './components/Loading'
 
 const App = () => {
   return (
@@ -15,6 +17,8 @@ const App = () => {
       {/* <h1> Welcome to Whatsapp Ghana</h1> */}
       <Router>
         <Navbar />
+        <Notify />
+        <Loading />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
