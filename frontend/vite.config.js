@@ -16,6 +16,9 @@ export default defineConfig({
       // rewrite: (path) => path.replace(/^\/api/, '')
     },
     port: 3000,
+    hmr: {
+      websocketPort: 3000,
+    },
     watch: {
       usePolling: true,
     },

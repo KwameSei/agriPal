@@ -2,12 +2,40 @@ import React from 'react'
 import { List, ListItemIcon, Menu, MenuItem} from '@mui/material'
 import { useValue } from '../../stateManagement/context/ContextProvider'
 import { Logout, Settings } from '@mui/icons-material'
+import UserTokenCheck from '../../checks/CheckUserToken'
 
 const UserMenu = ({ anchorUserMenu, setAnchorUserMenu }) => {
-    const {dispatch} = useValue()
+    UserTokenCheck()
+    const { dispatch, state: {currentUser} } = useValue()
     
     const handleClose = () => {
         setAnchorUserMenu(null)
+    }
+
+    const testAuthorization = async() => {
+        const url = import.meta.env.VITE_APP_SERVER_URL + '/api/posts'
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    authorization: `Bearer ${currentUser.token}`
+                },
+            })
+            const data = await response.json()
+            console.log(data)
+
+            if(!data.success) {
+                if(response.status === 401) {
+                    dispatch({ type: 'UPDATE_USER', payload: null })
+                    throw new Error(data.message)
+                }
+                throw new Error(data.message);
+            }
+        }   catch (error) {
+            dispatch({ type: 'UPDATE_NOTIFICATIONS', payload: { open:true ,severity: 'error', message: error.message } })
+            console.log(error)
+        }
     }
 
     return (
@@ -17,7 +45,7 @@ const UserMenu = ({ anchorUserMenu, setAnchorUserMenu }) => {
             onClose={handleClose} // onClose is a callback that is called when the menu is closed.
             onClick={handleClose} // onClick is a callback that is called when a menu item is clicked.
         >
-            <MenuItem>
+            <MenuItem onClick={testAuthorization}>
             <ListItemIcon>
                 <Settings fontSize="small" />
                 Profile

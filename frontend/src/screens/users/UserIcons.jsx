@@ -9,10 +9,11 @@ import { useValue } from "../../stateManagement/context/ContextProvider"
 import { faBell, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import './UserIcons.css'
 import UserMenu from "./UserMenu";
+import UserTokenCheck from "../../checks/CheckUserToken";
 // import { currentUser } from "../stateManagement/context/reducer"
 
-
 const UserIcons = () => {
+  UserTokenCheck()
   const {state:{currentUser}} = useValue(); // currentUser is the user that is currently logged in
 
   const [anchorUserMenu, setAnchorUserMenu] = useState(null)  

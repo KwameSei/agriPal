@@ -25,6 +25,7 @@ const reducer = (state, action) => {
     //     error: false,
     //   };
     case "UPDATE_USER": // Update the currentUser
+      localStorage.setItem("currentUser", JSON.stringify(action.payload)); // Update the localStorage
       return {
         ...state, // Spread operator
         currentUser: action.payload,  // Update the currentUser

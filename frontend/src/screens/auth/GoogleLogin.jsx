@@ -11,10 +11,10 @@ const GoogleLogin = () => {
   const handleCredentialResponse = (response) => {
     console.log(response);
     // if (response.credential) {
-    const id_token = response.credential;
-    const decodedToken = jwtDecode(id_token);
+    const token = response.credential;
+    const decodedToken = jwtDecode(token);
     const {sub:id, email, name, picture:imgURL} = decodedToken;
-    dispatch({type: "UPDATE_USER", payload: {id, email, name, id_token, imgURL, google: true}})
+    dispatch({type: "UPDATE_USER", payload: {id, email, name, token, imgURL, google: true}})
     dispatch({type: "CLOSE_LOGIN"})
     //   const googleUser = response;
     //   const profile = googleUser.getBasicProfile();
