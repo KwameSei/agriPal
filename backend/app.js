@@ -8,14 +8,12 @@ import cors from 'cors';
 
 dotenv.config();
 
-// import errorMiddleware from './middleware/error.js';
-
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
 // Enable CORS
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL);

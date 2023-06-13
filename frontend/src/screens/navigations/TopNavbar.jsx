@@ -21,7 +21,6 @@ import { useValue } from '../../stateManagement/context/ContextProvider';
 
 const Navbar = () => {
   const {state: {currentUser}, dispatch} = useValue();
-  console.log(currentUser);
 
   return (
     <div className="navbar">

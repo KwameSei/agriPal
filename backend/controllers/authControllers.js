@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import User from '../models/Users.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { roles, permissions } from '../roles_permit.js'
+import { roles, permissions } from '../roles_permit.js';
 import sendEmail from '../utils/email.js';
 import ErrorHandler from '../utils/errorHandling.js';
 import dotenv from 'dotenv';
@@ -10,11 +10,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const register = async (req, res, next) => {
+  console.log(req.body);
   try {
     const {
-      firstName,
-      lastName,
-      otherNames,
+      name,
       email,
       phone,
       password,
@@ -22,39 +21,37 @@ export const register = async (req, res, next) => {
       district,
       city,
       address,
-      picturePath,
-      role,
       connections,
       status,
-      permissions,
-      viewedProfile,
-      lastSeen,
-      impressions,
-      isVerified,
-      isSubscribed,
-      isBlocked,
-      isDeleted,
-      isSuspended,
-      isApproved,
-      isPending,
-      isPremium
     } = req.body;
+
+    // Check for password length
+    if (password.length < 8) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long' });
+    }
+
+    // Change email to lowercase
+    const emailToLower = email.toLowerCase();
+
+    // Check if user already exists
+    const userExists = await User.findOne({ email: emailToLower });
+    if (userExists) {
+      return res.status(400).json({ success: false, message: 'User already exists' });
+    }
 
     const saltRounds = 10;  // Number of rounds to generate salt for hashing
     const hashedPassword = await bcrypt.hash(password, saltRounds);  // Hash password
 
     const newUser = new User({
-      firstName,
-      lastName,
-      otherNames,
-      email,
+      name,
+      email: emailToLower,
       phone,
       password: hashedPassword,
       region,
       district,
+      photoURL: '',
       city,
       address,
-      picturePath,
       role: roles.user,
       permissions: 'user',
       connections,
@@ -69,11 +66,44 @@ export const register = async (req, res, next) => {
       isSuspended: false,
       isApproved: false,
       isPending: true,
-      isPremium: false
+      isPremium: false,
     });
 
-    const savedUser = await newUser.save(); // Save user to database
-    res.status(201).json(savedUser); // Send response
+    // Save user to database
+    const savedUser = await newUser.save();
+
+    // Generate JWT token
+    const token = jwt.sign({ user: savedUser }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+
+    // Prepare response data
+    const responseData = {
+      id: savedUser._id,
+      name: savedUser.name,
+      email: savedUser.email,
+      phone: savedUser.phone,
+      region: savedUser.region,
+      district: savedUser.district,
+      photoURL: savedUser.photoURL,
+      city: savedUser.city,
+      address: savedUser.address,
+      role: savedUser.role,
+      connections: savedUser.connections,
+      status: savedUser.status,
+      viewedProfile: savedUser.viewedProfile,
+      lastSeen: savedUser.lastSeen,
+      impressions: savedUser.impressions,
+      isVerified: savedUser.isVerified,
+      isSubscribed: savedUser.isSubscribed,
+      isBlocked: savedUser.isBlocked,
+      isDeleted: savedUser.isDeleted,
+      isSuspended: savedUser.isSuspended,
+      isApproved: savedUser.isApproved,
+      isPending: savedUser.isPending,
+      isPremium: savedUser.isPremium,
+      token,
+    };
+
+    res.status(201).json({ success: true, result: responseData });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -81,34 +111,41 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   const { email, password } = req.body; // Get email and password from request body
-
-  if(!email || !password) {
-    return ErrorHandler('Please provide an email and password', 400);
-  }
+  console.log("the request body is: ", req.body);
+  // Change email to lowercase
+  const emailToLower = email.toLowerCase();
 
   try {
-    const user = await User.findOne({ email }).select('+password'); // Find user by email
+    // Check if email and password are provided
+    if (!emailToLower || !password) {
+      return res.status(400).json({ success: false, error: 'Please provide email and password' });
+    }
 
-    if(!user) {
-      return ErrorHandler('Invalid credentials', 404);
+    // Find the user by email
+    const user = await User.findOne({ email: emailToLower }).select('+password');
+    console.log("the user is: ", user);
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User does not exist' });
     }
 
     // Check if password matches
     const isMatch = await bcrypt.compare(password, user.password);
 
-    if(!isMatch) {
-      return res.status(404).json({ success: false, error: 'Invalid credentials' });
+    if (!isMatch) {
+      return res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
 
     // Create token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-    console.log(token);
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    decoded.id = user._id;  // Add user id to decoded token 
-    delete user.password; // Delete password from user object
-    res.status(200).json({ success: true, token, user });
+    console.log("the token is: ", token);
+    // Remove password from user object
+    const { password: userPassword, ...userData } = user.toObject();
+    console.log("the user data is: ", userData);
+    res.status(200).json({ success: true, token, user: userData });
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: error.message });
+    console.log("the error is: ", error);
   }
 };
 

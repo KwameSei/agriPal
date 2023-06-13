@@ -15,7 +15,9 @@ const UserTokenCheck = () => {
       }
     };
     checkToken();
-  }, []);
+  }, [currentUser, dispatch]);
+
+  return null; // Assuming UserTokenCheck is a utility component, it doesn't render anything
 };
 
 export default UserTokenCheck;

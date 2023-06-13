@@ -6,15 +6,11 @@ const emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$/;
 const phoneRegex = /^\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/;
 
 const UserSchema = new mongoose.Schema({
-  firstName: {
+  name: {
     type: String,
-    required: [true, 'Please provide your first name.']
+    required: [true, 'Please provide your first name.'],
+    minlength: [2, 'Name must be at least 2 characters long.'],
   },
-  lastName: {
-    type: String,
-    required: [true, 'Please provide your last name.']
-  },
-  otherNames: String,
   email: {
     type: String,
     required: [true, 'Please provide your email address.'],
@@ -24,8 +20,8 @@ const UserSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: [true, 'Please provide your phone number.'],
     unique: true,
+    required: [true, 'Please provide your phone number.'],
     match: [phoneRegex, 'Please provide a valid phone number.'],
     index: true
   },
@@ -68,7 +64,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  picturePath: {
+  photoURL: {
     type: String,
     trim: true,
     default: "",

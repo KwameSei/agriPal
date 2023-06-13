@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Login from './screens/auth/login'
 import Register from './screens/auth/register'
 import './App.css'
@@ -19,6 +21,7 @@ const App = () => {
         <Navbar />
         <Notify />
         <Loading />
+        <ToastContainer />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
