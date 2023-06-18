@@ -5,6 +5,8 @@ import { AppBar, Typography, Toolbar, Button } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faHouse, faRightFromBracket, faRightToBracket, faUser } from '@fortawesome/free-solid-svg-icons';
 import { faUnlock } from '@fortawesome/free-solid-svg-icons';
+import { useSelector, useDispatch } from 'react-redux';
+import { openLogin, closeLogin, setLogout } from '../../state';
 // import { makeStyles } from '@emotion/styled'
 // import { styled } from '@mui/material/styles';
 import { Link, useNavigate } from 'react-router-dom';
@@ -14,13 +16,25 @@ import UserIcons from '../users/UserIcons';
 import { useContext } from 'react';
 import { Context } from '../../stateManagement/context/ContextProvider';
 import currentUser from '../../stateManagement/context/ContextProvider';
-import { useValue } from '../../stateManagement/context/ContextProvider';
+// import { useValue } from '../../stateManagement/context/ContextProvider';
 
 // const navigate = useNavigate();
 // const user = {name: 'Nat', imgURL: imgURL} 
 
 const Navbar = () => {
-  const {state: {currentUser}, dispatch} = useValue();
+  // const {state: {currentUser}, dispatch} = useValue();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    dispatch(openLogin()); // Dispatch openLogin action
+  };
+
+  const handleLogoutClick = () => {
+    dispatch(setLogout()); // Dispatch setLogout action
+    navigate('/login'); // Navigate to home page
+  };
 
   return (
     <div className="navbar">
@@ -43,18 +57,20 @@ const Navbar = () => {
             <Link to='/register' className="link">
               <FontAwesomeIcon icon={faUnlock} />
             </Link>
-            {!currentUser ? (
+            {!user ? (
               <Link to='/login'
                 className="link" 
                 // onClick={() => dispatch({type: 'UPDATE_USER', payload:user})}
-                onClick={() => dispatch({ type: 'OPEN_LOGIN' })}
+                onClick={handleLoginClick}
               >
                 <FontAwesomeIcon icon={faRightToBracket} />
               </Link>
             ) : (
               <UserIcons />
             )}
-            <Link to='/logout' className="link">
+            <Link to='/logout' className="link"
+              onClick={handleLogoutClick}
+            >
               <FontAwesomeIcon icon={faUser} />
             </Link>
           </div>

@@ -30,10 +30,25 @@ const reducer = (state, action) => {
         ...state, // Spread operator
         currentUser: action.payload,  // Update the currentUser
       };
+    case "UPDATE_PROFILE": // Update the currentUser
+      // localStorage.setItem("currentUser", JSON.stringify(action.payload)); // Update the localStorage
+      return {
+        ...state,
+        // profile: action.payload,
+        profile: {
+          ...state.profile,
+          ...action.payload,
+        },
+      };
     case "OPEN_LOGIN":  // Open the login modal
       return {
         ...state, // Spread operator
         openLogin: true,  // Update the currentUser
+      };
+    case "UPDATE_NAME":
+      return {
+        ...state.currentUser,
+        name: action.payload,
       };
     case "CLOSE_LOGIN": // Close the login modal
       return {
@@ -54,7 +69,17 @@ const reducer = (state, action) => {
       return {
         ...state,
         notify: action.payload,
-      }
+      };
+    case "UPDATE_IMAGES":
+      return {
+        ...state,
+        images: [...state.images, action.payload]
+      };
+    case "DELETE_IMAGE":
+      return {
+        ...state,
+        images: state.images.filter((image) => image.public_id !== action.payload)
+      };
     default:
       return state;
   } 

@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { OAuth2Client } from 'google-auth-library';
+import jwt from 'jsonwebtoken';
 
 dotenv.config()
 
@@ -21,7 +22,26 @@ const auth = async(req, res, next) => {
       const payload = ticket.getPayload();
       req.user = {id: payload.sub, name: payload.name, email: payload.email, picture: payload.picture};
     } else {
-      res.status(401).json({ message: "Invalid token" });
+      // const decodedData = jwt.verify(token, process.env.JWT_SECRET);
+      // const {id, name, email, phone, photoURL, role, connections, status, permissions, viewedProfile, lastSeen, impressions, isVerified, isSubscribed, isBlocked, isDeleted, isSuspended, isApproved, isPending, isPremium} = decodedData;
+      // req.user = {id, name, email, phone, photoURL, role, connections, status, permissions, viewedProfile, lastSeen, impressions, isVerified, isSubscribed, isBlocked, isDeleted, isSuspended, isApproved, isPending, isPremium
+      // };
+      try {
+        let token = req.headers("Authorization");
+
+        if (!token) {
+          return res.status(403).json({ message: "Access denied" });
+        }
+
+        if (token.startsWith("Bearer ")) {
+          token = token.slice(7, token.length).trimLeft();
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+      } catch (error) {
+        return res.status(401).json({ message: "Invalid token" });
+      }
     }
     next();
   } catch (error) {

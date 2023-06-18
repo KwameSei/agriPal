@@ -1,66 +1,41 @@
 import React from 'react'
-import { List, ListItemIcon, Menu, MenuItem} from '@mui/material'
-import { useValue } from '../../stateManagement/context/ContextProvider'
+import {ListItemIcon, Menu, MenuItem} from '@mui/material'
 import { Logout, Settings } from '@mui/icons-material'
 import UserTokenCheck from '../../checks/CheckUserToken'
+import Profile from './Profile'
+import { useDispatch, useSelector } from 'react-redux'
+import { updateProfile, updateUser } from '../../state' // Update the import statement with the correct path to authSlice
 
 const UserMenu = ({ anchorUserMenu, setAnchorUserMenu }) => {
     UserTokenCheck()
-    const { dispatch, state: {currentUser} } = useValue()
+    const user = useSelector((state) => state.user); // Update the state selector with the correct path to the user state
+    const dispatch = useDispatch();
     
     const handleClose = () => {
         setAnchorUserMenu(null)
     }
 
-    const testAuthorization = async() => {
-        const url = import.meta.env.VITE_APP_SERVER_URL + '/api/posts'
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    authorization: `Bearer ${currentUser.token}`
-                },
-            })
-            const data = await response.json()
-            console.log(data)
-
-            if(!data.success) {
-                if(response.status === 401) {
-                    dispatch({ type: 'UPDATE_USER', payload: null })
-                    throw new Error(data.message)
-                }
-                throw new Error(data.message);
-            }
-        }   catch (error) {
-            dispatch({ type: 'UPDATE_NOTIFICATIONS', payload: { open:true ,severity: 'error', message: error.message } })
-            console.log(error)
-        }
-    }
-
     return (
-        <Menu
-            anchorEl={anchorUserMenu} // anchorEl is the element that the menu is anchored to. It's the element that the menu will be positioned relative to.
-            open={Boolean(anchorUserMenu)}  // open is a boolean that controls whether the menu is displayed.
-            onClose={handleClose} // onClose is a callback that is called when the menu is closed.
-            onClick={handleClose} // onClick is a callback that is called when a menu item is clicked.
+        <>
+          <Menu
+            anchorEl={anchorUserMenu}
+            open={Boolean(anchorUserMenu)}
+            onClose={handleClose}
+            onClick={handleClose}
         >
-            <MenuItem onClick={testAuthorization}>
-            <ListItemIcon>
-                <Settings fontSize="small" />
-                Profile
-            </ListItemIcon>
-            </MenuItem>
-
-            {/* <MenuItem>
-            <ListItemIcon>
-                <Account fontSize="small" />
-            </ListItemIcon>
-                My account
-            </MenuItem> */}
+            {!user.google && (
+               <MenuItem
+                onClick={() => dispatch(updateProfile({ open: true, file: null, photoURL: user?.photoURL, name: user?.name, email: user?.email }))} // Dispatch the updateProfile action with the correct payload
+            >
+                <ListItemIcon>
+                    <Settings fontSize="small" />
+                    Profile
+                </ListItemIcon>
+                </MenuItem>  
+            )}
 
             <MenuItem
-                onClick={() => dispatch({ type: 'UPDATE_USER', payload: null })}
+                onClick={() => dispatch(updateUser(null))} // Dispatch the updateUser action with the null payload
             >
                 <ListItemIcon>
                     <Logout fontSize="small" />
@@ -68,6 +43,9 @@ const UserMenu = ({ anchorUserMenu, setAnchorUserMenu }) => {
                 Logout
             </MenuItem>
         </Menu>
+
+        <Profile />
+        </>
     )
 }
 

@@ -11,15 +11,18 @@ import {
 } from "@mui/material";
 import Password from "./PasswordField";
 import GoogleLogin from "./GoogleLogin";
-import { registerUser, loginUser } from "./api";
+import { registerUser, loginUser } from "../../actions/api";
 import { Close, Send } from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import {closeLogin, setLogin } from '../../state';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const Form = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [title, setTitle] = useState("Login");
-  const { state: { openLogin, currentUser }, dispatch } = useValue();
+  const { state: { openLogin, currentUser }, dispatch } = useValue(); 
   console.log("Dispatch:", dispatch);
   const nameRef = useRef();
   const emailRef = useRef();
@@ -27,11 +30,24 @@ const Form = () => {
   const phoneRef = useRef();
   const confirmPasswordRef = useRef();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatched = useDispatch();
+  const navigate = useNavigate();
+
+  const user = useSelector((state) => state.user);
 
   // Use useEffect to change the title of the dialog
   useEffect(() => {
     setTitle(isRegister ? "Register" : "Login");
   }, [isRegister]);
+
+  // Listen for changes in the currentUser state
+  // useEffect(() => {
+  //   // Check if the user is logged in and tohen exists
+  //   const token = localStorage.getItem("token");
+  //   if (token && user) {
+  //     dispatched({user: user, token: token})
+  //   }
+  // }, [dispatched, user]);
 
   const handleRegister = async () => {
     const name = nameRef.current.value;
@@ -63,6 +79,13 @@ const Form = () => {
       setIsSubmitting(false);
       dispatch({ type: "STOP_LOADING" });
     }
+
+    // Clear the form
+    nameRef.current.value = "";
+    emailRef.current.value = "";
+    passwordRef.current.value = "";
+    phoneRef.current.value = "";
+    confirmPasswordRef.current.value = "";
   };
 
   const handleLogin = async () => {
@@ -74,11 +97,21 @@ const Form = () => {
       dispatch({ type: "START_LOADING" });
 
       const response = await loginUser(userData);
+      // dispatch({ type: "UPDATE_USER", payload: { user: response } });
       if (response && response.success) {
-        dispatch({ type: "UPDATE_USER", payload: { user: response.result } });
+        console.log("Another response message: ", response);
+        dispatched(setLogin(response));
+        // dispatch({ type: "UPDATE_USER", payload: { user: response } });
+        // if (response) {
+        //   dispatched({
+        //     type: "LOGIN_SUCCESS",
+        //     payload: { user: response.user, token: response.token}
+        //   })
+        // }
         dispatch({ type: "CLOSE_LOGIN" });
 
         toast.success("Logged in Successfully", { position: toast.POSITION.TOP_CENTER });
+        navigate('/home')
       } else {
         throw new Error(response ? response.message : "Login failed");
       }
@@ -89,6 +122,10 @@ const Form = () => {
       setIsSubmitting(false);
       dispatch({ type: "STOP_LOADING" });
     }
+
+    // Clear the form
+    emailRef.current.value = "";
+    passwordRef.current.value = "";
   };
 
   const handleSubmit = (e) => {
@@ -102,7 +139,8 @@ const Form = () => {
   };
 
   const handleCloseLogin = () => {
-    dispatch({ type: "CLOSE_LOGIN" });
+    dispatched(closeLogin())
+    console.log("Close button clicked")
   };
 
   return (

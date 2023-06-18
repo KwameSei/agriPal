@@ -3,9 +3,9 @@ import { Avatar, Badge, Icon, IconButton, Tooltip } from "@mui/material"
 import { Box } from "@mui/system"
 import { Mail, Notifications } from "@mui/icons-material"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useContext } from "react"
 // import { ContextProvider } from "../stateManagement/context/ContextProvider"
-import { useValue } from "../../stateManagement/context/ContextProvider"
+// import { useValue } from "../../stateManagement/context/ContextProvider"
+import { useSelector } from 'react-redux';
 import { faBell, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import './UserIcons.css'
 import UserMenu from "./UserMenu";
@@ -14,12 +14,12 @@ import UserTokenCheck from "../../checks/CheckUserToken";
 
 const UserIcons = () => {
   UserTokenCheck()
-  const {state:{currentUser}} = useValue(); // currentUser is the user that is currently logged in
+  const user = useSelector((state) => state.user); // currentUser is the user that is currently logged in
 
   const [anchorUserMenu, setAnchorUserMenu] = useState(null)  
 
   // Check if currentUser is null or undefined
-  if (!currentUser) {
+  if (!user) {
     return null; // Or you can render a loading spinner or placeholder
   }
 
@@ -40,9 +40,9 @@ const UserIcons = () => {
       <Tooltip title="Account settings">
         <IconButton color="inherit" onClick={(e) => setAnchorUserMenu(e.currentTarget)}>  {/* e.currentTarget is the element that the event listener is attached to. */}
           <Avatar sx={{ width: 32, height: 32 }}
-            src={currentUser?.imgURL} alt={currentUser?.name}
+            src={user?.imgURL} alt={user?.name}
           >
-            {currentUser?.name?.charAt(0).toUpperCase()}
+            {user?.name?.charAt(0).toUpperCase()}
           </Avatar>
         </IconButton>
       </Tooltip>

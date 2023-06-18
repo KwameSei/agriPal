@@ -1,23 +1,36 @@
 import React, { useEffect } from "react";
-import { useValue } from "../stateManagement/context/ContextProvider";
+import { useSelector, useDispatch } from "react-redux";
 import jwtDecode from "jwt-decode";
+import { setLogout } from "../state";
 
 const UserTokenCheck = () => {
-  const {state: {currentUser}, dispatch} = useValue()
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const checkToken = async () => {
-      if (currentUser) {
-        const decodedToken = jwtDecode(currentUser.token);
-        if (decodedToken.exp * 1000 < Date.now()) {
-          dispatch({ type: "UPDATE_USER", payload: null });
+      if (user && user.token) {
+        try {
+          const decodedToken = jwtDecode(user.token);
+          if (decodedToken.exp * 1000 < Date.now()) {
+            dispatch(setLogout());
+          }
+        } catch (error) {
+          console.log("Error decoding token:", error);
+          dispatch(setLogout());
         }
       }
     };
-    checkToken();
-  }, [currentUser, dispatch]);
 
-  return null; // Assuming UserTokenCheck is a utility component, it doesn't render anything
+    checkToken()
+      .then(() => {})
+      .catch((error) => {
+        console.log("Error checking token:", error);
+        dispatch(setLogout());
+      });
+  }, [user, dispatch]);
+
+  return null;
 };
 
 export default UserTokenCheck;
