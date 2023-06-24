@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useValue } from "../../stateManagement/context/ContextProvider";
 import {
+  Box,
   DialogContent,
   DialogContentText,
   IconButton,
@@ -8,27 +9,33 @@ import {
   DialogActions,
   Button,
   DialogTitle,
+  useMediaQuery,
 } from "@mui/material";
 import Password from "./PasswordField";
+import ImageUpload from "../../components/widgets/imageUpload";
 import GoogleLogin from "./GoogleLogin";
 import { registerUser, loginUser } from "../../actions/api";
 import { Close, Send } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import {closeLogin, setLogin } from '../../state';
+import { closeLogin, setLogin, setRegister } from '../../state';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Dropzone from "react-dropzone";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import { Formik } from "formik";
+import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 
 const Form = () => {
   const [isRegister, setIsRegister] = useState(false);
   const [title, setTitle] = useState("Login");
-  const { state: { openLogin, currentUser }, dispatch } = useValue(); 
-  console.log("Dispatch:", dispatch);
+  const { state: { openLogin, currentUser }, dispatch } = useValue();
   const nameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
   const phoneRef = useRef();
   const confirmPasswordRef = useRef();
+  const photoURLRef = useRef();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatched = useDispatch();
   const navigate = useNavigate();
@@ -40,34 +47,47 @@ const Form = () => {
     setTitle(isRegister ? "Register" : "Login");
   }, [isRegister]);
 
-  // Listen for changes in the currentUser state
-  // useEffect(() => {
-  //   // Check if the user is logged in and tohen exists
-  //   const token = localStorage.getItem("token");
-  //   if (token && user) {
-  //     dispatched({user: user, token: token})
-  //   }
-  // }, [dispatched, user]);
-
   const handleRegister = async () => {
     const name = nameRef.current.value;
     const email = emailRef.current.value;
-    const password = passwordRef.current?.value;
     const phone = phoneRef.current.value;
+    const password = passwordRef.current?.value;
     const confirmPassword = confirmPasswordRef.current?.value;
-
-    const userData = { name, email, password, phone, confirmPassword };
-
+    const photoURLFiles = photoURLRef.current?.files;
+  
+    if (!photoURLFiles || photoURLFiles.length === 0) {
+      toast.error("Image file is required", { position: toast.POSITION.TOP_CENTER });
+      return;
+    }
+  
+    const photoURL = photoURLFiles[0];
+  
+    const userData = {
+      name,
+      email,
+      password,
+      phone,
+      confirmPassword,
+      photoURL,
+    };
+  
     try {
       setIsSubmitting(true);
       dispatch({ type: "START_LOADING" });
-
+  
+      // Upload the photoURL file
+      // const photoURLURL = await photoURLUpload(photoURL);
+  
+      // Include the photoURL URL in the user data
+      // userData.photoURLURL = photoURLURL;
+  
       const response = await registerUser(userData);
-
+  
       if (response && response.success) {
-        dispatch({ type: "UPDATE_USER", payload: { user: response.result } });
+        // dispatch({ type: "UPDATE_USER", payload: { user: response.result } });
+        dispatched(setRegister(response));
         dispatch({ type: "CLOSE_LOGIN" });
-
+  
         toast.success("Registered Successfully", { position: toast.POSITION.TOP_CENTER });
       } else {
         throw new Error(response ? response.message : "Registration failed");
@@ -79,14 +99,20 @@ const Form = () => {
       setIsSubmitting(false);
       dispatch({ type: "STOP_LOADING" });
     }
-
+  
     // Clear the form
     nameRef.current.value = "";
     emailRef.current.value = "";
     passwordRef.current.value = "";
     phoneRef.current.value = "";
     confirmPasswordRef.current.value = "";
+    photoURLRef.current.value = "";
   };
+  
+
+  const handleFileChange = (file) => {
+    photoURLRef.current = file;
+  };  
 
   const handleLogin = async () => {
     const email = emailRef.current.value;
@@ -145,7 +171,7 @@ const Form = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} encType="multipart/form-data">
         <DialogTitle id="alert-dialog-title">
           {title}
           <IconButton
@@ -185,6 +211,9 @@ const Form = () => {
                 inputProps={{ minLength: 11, maxLength: 13 }}
                 required
               />
+
+              {/* photoURL file upload */}
+              <ImageUpload onFileChange={handleFileChange} />
             </>
           )}
           {/* For login and signup */}
