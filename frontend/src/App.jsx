@@ -19,6 +19,7 @@ import Basenav from './screens/navigations/BaseNav'
 import Notify from './components/Notifications'
 import Loading from './components/Loading'
 import Profile from './screens/users/Profile';
+import EventPage from './screens/events/EventPage';
 
 import { Navigate } from 'react-router-dom';
 
@@ -41,6 +42,7 @@ const App = () => {
         <ToastContainer />
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/resetpassword/:resetToken" element={<ResetPassword />} />
@@ -48,7 +50,8 @@ const App = () => {
           {/* <Route path="/user" element={<User />} /> */}
           {isAuth ? (
             <>
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile/:id" element={<Profile />} />
+              <Route path="/events" element={<EventPage />} />
               <Route path="/home" element={<Home />} />
             </>
           ) : (

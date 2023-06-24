@@ -1,16 +1,19 @@
 import crypto from 'crypto';
 import User from '../models/Users.js';
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
 import jwt from 'jsonwebtoken';
 import { roles, permissions } from '../roles_permit.js';
 import sendEmail from '../utils/email.js';
-import ErrorHandler from '../utils/errorHandling.js';
+
+// import uploadImage from '../cloudinary-storage/storage.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 export const register = async (req, res, next) => {
   console.log(req.body);
+
   try {
     const {
       name,
@@ -21,26 +24,24 @@ export const register = async (req, res, next) => {
       district,
       city,
       address,
+      photoURL,
       connections,
       status,
     } = req.body;
 
-    // Check for password length
     if (password.length < 8) {
       return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long' });
     }
 
-    // Change email to lowercase
     const emailToLower = email.toLowerCase();
 
-    // Check if user already exists
     const userExists = await User.findOne({ email: emailToLower });
     if (userExists) {
       return res.status(400).json({ success: false, message: 'User already exists' });
     }
 
-    const saltRounds = 10;  // Number of rounds to generate salt for hashing
-    const hashedPassword = await bcrypt.hash(password, saltRounds);  // Hash password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const newUser = new User({
       name,
@@ -49,7 +50,7 @@ export const register = async (req, res, next) => {
       password: hashedPassword,
       region,
       district,
-      photoURL: '',
+      photoURL,
       city,
       address,
       role: roles.user,
@@ -69,13 +70,10 @@ export const register = async (req, res, next) => {
       isPremium: false,
     });
 
-    // Save user to database
     const savedUser = await newUser.save();
 
-    // Generate JWT token
     const token = jwt.sign({ user: savedUser }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
-    // Prepare response data
     const responseData = {
       id: savedUser._id,
       name: savedUser.name,
@@ -108,6 +106,7 @@ export const register = async (req, res, next) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 export const login = async (req, res, next) => {
   const { email, password } = req.body; // Get email and password from request body

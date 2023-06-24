@@ -22,12 +22,12 @@ mongoose.connect(MONGO_URI, {
         console.log('Error connecting to Database', error.message);
     });
 
-    process.on('unhandledRejection', (error) => {
-        console.log('Unhandled Rejection', error.message);
-        server.close(() => {
-            process.exit(1);
-        });
-    });
+    // process.on('unhandledRejection', (error) => {
+    //     console.log('Unhandled Rejection', error.message);
+    //     app.close(() => {
+    //         process.exit(1);
+    //     });
+    // });
 
 // import { config } from 'dotenv';
 // import connectDB from './config/database.js';

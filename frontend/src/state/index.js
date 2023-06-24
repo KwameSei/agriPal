@@ -18,7 +18,19 @@ export const authSlice = createSlice({
       state.mode = state.mode === "light" ? "dark" : "light";
     },
     setLogin: (state, action) => {
-      state.user = action.payload.user;
+      state.user = {
+        ...action.payload.user,
+        photoURL: action.payload.user.photoURL || "https://via.placeholder.com/150",
+        userId: action.payload.user._id,
+      }
+      state.token = action.payload.token;
+    },
+    setRegister: (state, action) => {
+      state.user = {
+        ...action.payload.user,
+        photoURL: action.payload.user.photoURL || "https://via.placeholder.com/150",
+        userId: action.payload.user._id,
+      }
       state.token = action.payload.token;
     },
     openModal: (state) => {
@@ -68,17 +80,17 @@ export const authSlice = createSlice({
     },
     // Define the updateProfile action
     updateProfile: (state, action) => {
-      // Update the profile properties in the user object
       if (state.user) {
-        state.user.photoURL = action.payload.photoURL;
-        state.user.name = action.payload.name;
-        state.user.email = action.payload.email;
+        state.user.photoURL = action.payload?.photoURL || state.user.photoURL;
+        state.user.name = action.payload?.name || state.user.name;
+        state.user.email = action.payload?.email || state.user.email;
       } else {
         console.log("No user to update profile");
       }
     },
     // Define the updateUser action
     updateUser: (state, action) => {
+      state.user.photoURL = action.payload?.photoURL || state.user.photoURL;
       state.user = action.payload;
     },
   },
@@ -87,6 +99,7 @@ export const authSlice = createSlice({
 export const {
   setMode,
   setLogin,
+  setRegister,
   setLogout,
   setConnections,
   setPosts,

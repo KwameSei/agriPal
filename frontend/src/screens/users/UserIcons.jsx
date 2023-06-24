@@ -19,15 +19,15 @@ const UserIcons = () => {
   const [anchorUserMenu, setAnchorUserMenu] = useState(null)  
 
   // Check if currentUser is null or undefined
-  if (!user) {
-    return null; // Or you can render a loading spinner or placeholder
+  if (!user || !user.name || !user.photoURL) {
+    return null; // Or render a loading spinner or placeholder
   }
 
   return (
     <Box>
       <IconButton size="large" color="white" className="link">
         <Badge badgeContent={4} color="error">
-        <FontAwesomeIcon icon={faEnvelope} className="link" />
+          <FontAwesomeIcon icon={faEnvelope} className="link" />
         </Badge>
       </IconButton>
 
@@ -40,9 +40,9 @@ const UserIcons = () => {
       <Tooltip title="Account settings">
         <IconButton color="inherit" onClick={(e) => setAnchorUserMenu(e.currentTarget)}>  {/* e.currentTarget is the element that the event listener is attached to. */}
           <Avatar sx={{ width: 32, height: 32 }}
-            src={user?.imgURL} alt={user?.name}
+            src={user.photoURL} alt={user.name}
           >
-            {user?.name?.charAt(0).toUpperCase()}
+            {user.name.charAt(0).toUpperCase()}
           </Avatar>
         </IconButton>
       </Tooltip>

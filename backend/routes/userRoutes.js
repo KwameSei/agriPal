@@ -13,9 +13,9 @@ import {
 
 const router = express.Router();
 
-router.get('/', getUsers);
-router.get('/:id', auth, getUser);
+router.get('/single_user/:id', getUser);
 router.get('/:id/connection', auth, getUserConnection)
+router.get('/', getUsers);
 router.post('/', createUser);
 router.put('/update_user', auth, updateUserProfile);
 router.put('/:id/:connectionId', auth, addRemoveConnection);
