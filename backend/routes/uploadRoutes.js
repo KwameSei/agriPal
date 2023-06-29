@@ -1,17 +1,10 @@
-import express from 'express';
-import {
-  forgotpassword,
-  login,
-  register,
-  resetpassword
-} from './../controllers/authControllers.js';
+import { uploadImage } from '../controllers/uploadController.js';
 import upload from '../cloudinary-storage/storage.js';
+import express from "express";
 
 const router = express.Router();
 
-// router.post('/register', register);
-
-router.post("/register", upload.single("picture"), register, (req, res) => {
+router.post("/upload", upload.single("picture"), uploadImage, (req, res) => {
   try {
     const picture = req.file;
     console.log(picture);
@@ -30,11 +23,5 @@ router.post("/register", upload.single("picture"), register, (req, res) => {
     return res.status(500).json({ success: false, message: 'Server Error' });
   }
 });
-
-router.post('/login', login);
-
-router.post('/forgotpassword', forgotpassword);
-
-router.put('/resetpassword/:resetToken', resetpassword);
 
 export default router;

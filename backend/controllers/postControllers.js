@@ -3,6 +3,14 @@ import Post from '../models/Post.js';
 export const createPost = async (req, res) => {
   try {
     const { userId, name, description, location, photoURL, userPicPath } = req.body;
+    const user = req.user;
+
+    if (!user) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    
+
     const newPost = new Post({
       userId,
       name: user.name,

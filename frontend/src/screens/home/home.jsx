@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Box, useMediaQuery } from '@mui/material';
 import { useSelector } from 'react-redux';
-import UserProfileWidget from '../../widgets/UserProfileWidget';
+import Timeline from '../../widgets/Timeline';
+import PostsWidget from '../../widgets/posts/PostsWidget';
+import AllUserPosts from '../../widgets/posts/AllUserPosts';
+import Commercials from '../../widgets/commercials/Commercials';
+import SuggestedConnections from '../../widgets/users/SuggestedConnections';
 
 const Home = () => {
   const isNotMobile = useMediaQuery('(min-width:1000px)');
@@ -14,31 +18,37 @@ const Home = () => {
   const isExtraExtraExtraExtraSmallMobile = useMediaQuery('(max-width:200px)');
   const isExtraExtraExtraExtraExtraSmallMobile = useMediaQuery('(max-width:150px)');
 
-  const user = useSelector((state) => state.user);
-  console.log('This is the user:', user);
-  // const { _id, photoURL } = user;
+  const { _id, photoURL } = useSelector((state) => state.user);
 
   return (
     <div>
       <Box>
         <Box
           width="100%"
-          padding="2rem 3%"
+          padding="2rem 1%"
           display={isNotMobile ? 'flex' : 'block'}
           justifyContent="space-between"
           alignItems="center"
           gap="0.5rem"
         >
           <Box
-            flexBasis={isNotMobile ? '30%' : undefined}
+            flexBasis={isNotMobile ? '25%' : undefined}
           >
-            {/* <UserProfileWidget userId={_id} photoURL={photoURL} /> */}
+            <Timeline userId={_id} photoURL={photoURL} />
           </Box>
           <Box
             flexBasis={isNotMobile ? '45%' : undefined}
             mt={isNotMobile ? 0 : '1rem'}
-          ></Box>
-          {isNotMobile && <Box flexBasis="28%"></Box>}
+          >
+            <PostsWidget photoURL={photoURL} />
+            <AllUserPosts userId={_id} />
+          </Box>
+          {isNotMobile && (
+          <Box flexBasis="25%" marginRight="2rem">
+            <Commercials />
+            <SuggestedConnections userId={_id} />
+          </Box>
+          )}
         </Box>
       </Box>
     </div>

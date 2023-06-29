@@ -33,10 +33,21 @@ const App = () => {
 
   return (
     <Router>
-      <div className="app">
+      <div 
+        className="app"
+        style={{ 
+          backgroundImage: "url(/images/adinkra-symbols.png)",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          height: "100vh",
+          width: "100vw",
+          overflow: "hidden",
+        }}
+      >
         {/* <h1> Welcome to Whatsapp Ghana</h1> */}
         <Navbar />
-        <Basenav />
+        {/* <Basenav /> */}
         <Notify />
         <Loading />
         <ToastContainer />

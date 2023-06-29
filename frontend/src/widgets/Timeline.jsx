@@ -14,16 +14,16 @@ import {
   Pages,
 } from "@mui/icons-material";
 import { Box, Button, Divider, Typography } from "@mui/material";
-import UserImage from "../components/widgets/userImageWidget";
+import UserImage from "../components/widgets/ImageWidget";
 import Wrapper from "../components/widgets/widgetWrapper";
 import FlexBetween from "../components/FlexBetween";
-import "./UserProfileWidget.css"
+import "./widgets.css"
 
-const UserProfileWidget = ({ userId }) => {
+const Timeline = ({ userId, photoURL }) => {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState(null);
+  const [user, setUser] = useState(null);
   const [error, setError] = useState(null); // Add an error state
-  const { token, user } = useSelector((state) => state);
+  const token  = useSelector((state) => state.token);
   console.log("This is the user:", user);
   // const userId = user?._id; // Add a conditional check for user object
   console.log("This is the userId:", userId);
@@ -40,7 +40,7 @@ const UserProfileWidget = ({ userId }) => {
       });
       console.log("This is the response:", res);
       const data = res.data; // Remove unnecessary await statement
-      setUserData(data);
+      setUser(data);
     } catch (err) {
       console.log(err);
       setError("Failed to fetch user data."); // Set the error message
@@ -55,7 +55,7 @@ const UserProfileWidget = ({ userId }) => {
     return <div>Error: {error}</div>; // Display error message if error exists
   }
 
-  if (!userData) return null;
+  if (!user) return null;
 
   const {
     name,
@@ -70,18 +70,18 @@ const UserProfileWidget = ({ userId }) => {
     viewedProfiles,
     impressions,
     // photoURL, // Add this line to define the photoURL variable
-  } = userData;
+  } = user;
 
   return (
-    <div>
-      <Wrapper className="wrapper-container">
+    <div className="wrapper">
+      {/* <Wrapper className="wrapper-container"> */}
         <FlexBetween
          gap="0.5"
           pb="1rem"
           onClick={() => navigate(`/profile/${userId}`)}
         >
           <FlexBetween gap="0.5">
-            {/* <UserImage image={photoURL} size="60px" /> */}
+            <UserImage image={photoURL} size="60px" />
             <Box>
               <Typography 
                 variant="h6"
@@ -98,13 +98,13 @@ const UserProfileWidget = ({ userId }) => {
               >
                 {name}
               </Typography>
-              <Typography color="dark">{connections.length}</Typography>
+              <Typography color="dark">{connections.length} connections</Typography>
             </Box>
           </FlexBetween>
           <ManageAccountsOutlined />
           </FlexBetween>
 
-          <Divider />
+          <Divider color="white" />
           <Box p="1rem 0">
             <Box mb="0.5rem" display="flex" alignItems="center" gap="1rem">
               <LocationOnOutlined fontSize="large" fontWeight="bold" color="red" />
@@ -124,7 +124,7 @@ const UserProfileWidget = ({ userId }) => {
             </Box>
           </Box>
 
-          <Divider />
+          <Divider color="white" />
           <Box p="1rem 0">
             <FlexBetween mb="0.5rem" alignItems="center" >
               <Typography variant="h6" color="dark">Profile Views</Typography>
@@ -135,9 +135,9 @@ const UserProfileWidget = ({ userId }) => {
               <Pages color="dark" />{impressions}
             </FlexBetween>
           </Box>	
-      </Wrapper>
+      {/* </Wrapper> */}
     </div>
   )
 };
 
-export default UserProfileWidget;
+export default Timeline;

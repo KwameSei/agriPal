@@ -26,6 +26,8 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { Formik, Form } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
+import "../../widgets/widgets.css"
+import "./Form.css"
 
 // Creating validation schema for form
 const registerSchema = yup.object().shape({
@@ -68,32 +70,27 @@ const AuthForm = () => {
   const isLogin = type === "login";
   const isRegister = type === "register";
 
-const register = async (values, onSubmitProps) => {
+  const register = async (values, onSubmitProps) => {
     try {
       const formData = new FormData();
       for (let key in values) {
         formData.append(key, values[key]);
-        console.log("This is key value: ", key, values[key]);
       }
-      formData.append('photoURL', values.picture.name);
-      console.log("This is form data: ", formData);
 
-      const res = await fetch(
-        "http://localhost:5000/api/auth/register", 
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      formData.append("picture", values.picture.name); // Append image file to form data
+  
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        body: formData,
+      });
       const registeredUser = await res.json();
       console.log("This is registered user: ", registeredUser);
-
+  
       if (registeredUser) {
         setType("login");
       }
-
+  
       toast.success("Registered successfully");
-      
     } catch (err) {
       console.log(err);
       toast.error("Invalid credentials");
@@ -178,6 +175,7 @@ const register = async (values, onSubmitProps) => {
   };
 
   return (
+    <div className="wrapper main" >
     <Box>
       <Formik
         initialValues={isLogin ? initialValuesLogin : initialValuesRegister}
@@ -202,7 +200,7 @@ const register = async (values, onSubmitProps) => {
               display="grid"
               gridTemplateColumns="repeat(4, minmax(0, 1fr))"
               gap="30px"
-              padding="20px"
+              padding="1px"
               width="100%"
               sx={{
                 "& > div": {
@@ -221,7 +219,11 @@ const register = async (values, onSubmitProps) => {
                     onBlur={handleBlur}
                     error={touched.name && Boolean(errors.name)}
                     helperText={touched.name && errors.name}
-                    sx={{ gridColumn: "span 4" }}
+                    sx={{ 
+                      gridColumn: "span 4",
+                      background: "#fff",
+                      color: "#fff",
+                    }}
                   />
                   <TextField
                     label="Phone"
@@ -232,7 +234,11 @@ const register = async (values, onSubmitProps) => {
                     onBlur={handleBlur}
                     error={touched.phone && Boolean(errors.phone)}
                     helperText={touched.phone && errors.phone}
-                    sx={{ gridColumn: "span 4" }}
+                    sx={{ 
+                      gridColumn: "span 4",
+                      background: "#fff",
+                      color: "#fff" 
+                    }}
                   />
                   <Box
                     gridColumn="span 4"
@@ -247,8 +253,8 @@ const register = async (values, onSubmitProps) => {
                       acceptedFiles=".jpg, .png, .jpeg"
                       multiple={false}
                       value={values.picture}
-                      onChange={(files) => {
-                        setFieldValue("picture", files[0]);
+                      onChange={(acceptedFiles) => {
+                        setFieldValue("picture", acceptedFiles[0]);
                       }}
                       onDrop={(acceptedFiles) =>
                         handleImageDrop(acceptedFiles, setFieldValue)
@@ -268,6 +274,8 @@ const register = async (values, onSubmitProps) => {
                           height="100%"
                           sx={{
                             "&:hover": { cursor: "pointer" },
+                            background: "#fff",
+                            color: "#000",
                           }}
                         >
                           <input {...getInputProps()} />
@@ -300,7 +308,11 @@ const register = async (values, onSubmitProps) => {
                 onBlur={handleBlur}
                 error={touched.email && Boolean(errors.email)}
                 helperText={touched.email && errors.email}
-                sx={{ gridColumn: "span 4" }}
+                sx={{ 
+                  gridColumn: "span 4",
+                  background: "#fff",
+                  color: "#fff" 
+                }}
               />
               <TextField
                 label="Password"
@@ -312,20 +324,25 @@ const register = async (values, onSubmitProps) => {
                 onBlur={handleBlur}
                 error={touched.password && Boolean(errors.password)}
                 helperText={touched.password && errors.password}
-                sx={{ gridColumn: "span 4" }}
+                sx={{ 
+                  gridColumn: "span 4",
+                  background: "#fff",
+                  color: "#fff" 
+                }}
               />
             </Box>
 
             {/* Register and login buttons */}
-            <Box>
+            <Box marginTop="1.5rem">
               <Button
                 variant="contained"
                 color="primary"
                 type="submit"
                 disabled={isSubmitting}
-                sx={{ 
-                  marginRight: "10px",
+                sx={{
+                  left: "40%",
                   padding: "10px 20px",
+                  marginBottom: "1rem",
                   "&:hover": {
                     backgroundColor: "#3f51b5",
                     color: "#fff",
@@ -336,6 +353,9 @@ const register = async (values, onSubmitProps) => {
               </Button>
               <Typography
                 variant="body2"
+                marginBottom="1rem"
+                color="red"
+                fontSize="15px"
                 sx={{ 
                   cursor: "pointer",
                   textAlign: "center",
@@ -353,10 +373,17 @@ const register = async (values, onSubmitProps) => {
                 {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
               </Typography>
             </Box>
+            {/* GOOGLE LOGIN */}
+            <Box>
+              <GoogleLogin sx={{
+                marginTop: "1rem"
+              }} />
+            </Box>
           </Form>
         )}
       </Formik>
     </Box>
+    </div>
   )
 };
 

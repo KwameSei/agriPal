@@ -107,7 +107,6 @@ export const register = async (req, res, next) => {
   }
 };
 
-
 export const login = async (req, res, next) => {
   const { email, password } = req.body; // Get email and password from request body
   console.log("the request body is: ", req.body);
